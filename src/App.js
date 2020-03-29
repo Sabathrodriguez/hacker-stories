@@ -25,21 +25,25 @@ const list = [
     objectID: 1
   }
 ]
-const title = 'React'
 
-const App = () => (
-  <div>
-    <h1>
-      My hacker stories
-    </h1>
+const App = () => {
+  const handleChange = event => {
+    console.log(event.target.value);
+  };
+  return (
+    <div>
+      <h1>
+        My hacker stories
+      </h1>
 
-    <label htmlFor="search">search: </label>
-    <input id="search" type="text"/>
+      <label htmlFor="search">search: </label>
+      <input id="search" type="text" onChange={handleChange}/>
 
-    <hr/>
-    <List />
-  </div>
-);
+      <hr/>
+      <List />
+    </div>
+  ); 
+};
 
 const List = () => (
    list.map(item => (
