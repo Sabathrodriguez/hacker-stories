@@ -1,11 +1,5 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-
-const welcome = {
-  greeting: "Hey",
-  title: "React"
-}
 
 const App = () => {
   const stories = [
@@ -27,26 +21,36 @@ const App = () => {
     }
   ]
 
-  const [searchTerm, setSearchTerm] = React.useState('');
-
-  const handleChange = event => {
-    setSearchTerm(event.target.value);
-  };
   return (
     <div>
-      <h1>
-        My hacker stories
-      </h1>
+      <h1>My hacker stories</h1>
 
-      <label htmlFor="search">search: </label>
-      <input id="search" type="text" onChange={handleChange}/>
-      <p>Searching for <strong>{searchTerm}</strong>.</p>
+      <Search />
 
       <hr/>
       <List list={stories}/>
     </div>
   ); 
 };
+
+const Search = () => {
+  const [searchTerm, setSearchTerm] = React.useState("");
+
+  const handleChange = event => {
+    setSearchTerm(event.target.value);
+  };
+
+  return (
+    <div>
+      <label htmlFor="search">Search: </label>
+      <input id="search" type="text" onChange={handleChange}/>
+
+      <p>
+        Searching for <strong>{searchTerm}</strong>
+      </p>
+    </div>
+  );
+}
 
 const List = props => (
    props.list.map(item => (
