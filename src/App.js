@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 
+//REMOVE
 const initialStories = [
   {
     title: "React",
@@ -44,6 +45,7 @@ const storiesReducer = (state, action) => {
   }
 }
 
+//REMOVE
 const getAsyncStories = () => 
     new Promise(resolve => 
       setTimeout( () => resolve({data: {stories: initialStories}}), 2000));
@@ -57,6 +59,9 @@ const useSemiPersistentState = (key, initialState) => {
   return [value, setValue];
 };
 
+//A
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query='
+
 const App = () => {
 
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search', 'React');
@@ -67,12 +72,18 @@ const App = () => {
     );
 
   React.useEffect(() => {
+    if (!searchTerm) return;
+
     dispatchStories({type: 'STORIES_FETCH_INIT'});
 
-    getAsyncStories().then(result => {
-      dispatchStories({type: 'STORIES_FETCH_SUCCESS', payload: result.data.stories});
+    fetch(`${API_ENDPOINT}${searchTerm}`)//B
+    .then(response => response.json())//C
+    .then(result => {
+      dispatchStories({type: 'STORIES_FETCH_SUCCESS', 
+      payload: result.hits, //D
+    });
     }).catch(() => dispatchStories({type: 'STORIES_FETCH_FAILURE'}));
-  }, []);
+  }, [searchTerm]);
 
   const handleRemoveStory = item => {
     dispatchStories({
@@ -104,7 +115,7 @@ const App = () => {
 
       <hr/>
       {stories.isError && <p>Something went wrong...</p>}
-      { stories.isLoading ? (<p>Loading...</p>) :<List list={searchedStories} onRemoveItem={handleRemoveStory}/> }
+      { stories.isLoading ? (<p>Loading...</p>) :<List list={stories.data} onRemoveItem={handleRemoveStory}/> }
     </div>
   ); 
 };
