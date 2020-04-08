@@ -1,25 +1,18 @@
 import React from 'react';
 import './App.css';
+import axios from 'axios';
 
-//REMOVE
-const initialStories = [
-  {
-    title: "React",
-    url: "https://reactjs.org/",
-    author: "Jordan Walke",
-    num_comments: 3,
-    points: 4,
-    objectID: 0
-  }, 
-  {
-    title: "Redux",
-    url: "https://redux.js.org/",
-    author: 'Dan Abramov, Andrew Clark',
-    num_comments: 2,
-    points: 5,
-    objectID: 1
-  }
-]
+const SearchForm = ({searchTerm, onSearchInput, OnSearchSubmit }) => (
+  <form onSubmit={OnSearchSubmit}>
+    <InputWithLabel id='search' value={searchTerm} isFocused onInputChang={onSearchInput}>
+      <strong>Search:</strong>
+    </InputWithLabel>
+
+    <button type='submit' disabled={!searchTerm}>
+      submit
+    </button>
+  </form>
+);
 
 const storiesReducer = (state, action) => {
   if (action.type === "SET_STORIES") {
@@ -45,11 +38,6 @@ const storiesReducer = (state, action) => {
   }
 }
 
-//REMOVE
-const getAsyncStories = () => 
-    new Promise(resolve => 
-      setTimeout( () => resolve({data: {stories: initialStories}}), 2000));
-
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
 
@@ -65,6 +53,7 @@ const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query='
 const App = () => {
 
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search', 'React');
+  const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`);
   
 
   const [stories, dispatchStories] = React.useReducer(storiesReducer,
@@ -72,19 +61,23 @@ const App = () => {
     );
 
   //A
-  const handleFetchStories = React.useCallback(() => {
-    if (!searchTerm) return;
+  const handleFetchStories = React.useCallback(async () => {
 
     dispatchStories({type: 'STORIES_FETCH_INIT'});
 
-    fetch(`${API_ENDPOINT}${searchTerm}`)//B
-    .then(response => response.json())//C
-    .then(result => {
-      dispatchStories({type: 'STORIES_FETCH_SUCCESS', 
-      payload: result.hits, //D
+    try {
+      const result = await axios.get(url);
+
+      dispatchStories({
+        type: 'STORIES_FETCH_SUCCESS',
+        payload: result.data.hits,
+      });
+  } catch {
+    dispatchStories({
+      type: 'STORIES_FETCH_FAILURE'
     });
-    }).catch(() => dispatchStories({type: 'STORIES_FETCH_FAILURE'}));
-  }, [searchTerm]); //E
+  }
+ }, [url]); //E
 
   React.useEffect(() => {
     handleFetchStories(); //C
@@ -101,20 +94,21 @@ const App = () => {
   }, [searchTerm]);
 
   //A
-  const handleSearch = event => {
+  const handleSearchInput = event => {
     //C
     setSearchTerm(event.target.value);
   };
 
-
+  const handleSearchSubmit = event => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
+    event.preventDefault();
+  };
 
   return (
     <div>
       <h1>My hacker stories</h1>
 
-      <InputWithLabel id="search" value={searchTerm} isFocused onInputChange={handleSearch}>
-        <strong><SimpleTextComponent yourText="Search:"/></strong>
-      </InputWithLabel>
+      <SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} OnSearchSubmit={handleSearchSubmit}/>
 
       <hr/>
       {stories.isError && <p>Something went wrong...</p>}
@@ -163,14 +157,6 @@ const Item = ({ item, onRemoveItem }) => {
       <span>{item.points}</span>
       <span><button type="button" onClick={() => handleRemoveItem(item)}>Dismiss</button></span>
     </div>
-  )
-}
-
-const SimpleTextComponent = ({yourText}) => {
-  return (
-    <>
-      {yourText}
-    </>
   )
 }
 
