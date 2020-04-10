@@ -1,14 +1,37 @@
 import React from 'react';
-import './App.css';
+// import './App.css';
 import axios from 'axios';
+import styled from 'styled-components';
 
+//styled components
+//-------------------------------------------------------------------
+
+const StyledContainer = styled.div`
+height: 100 vw;
+padding: 20px;
+
+background: #83a4d4;
+background: linear-gradient(to left, #b6fbff, #83a4d4);
+
+color: #171212;
+`;
+
+const StyledHeadlinePrimary = styled.h1`
+  font-size: 48px;
+  font-weight: 300;
+  letter-spacing: 2px;
+`;
+
+
+
+//-------------------------------------------------------------------
 const SearchForm = ({searchTerm, onSearchInput, OnSearchSubmit }) => (
-  <form onSubmit={OnSearchSubmit}>
+  <form onSubmit={OnSearchSubmit} className="search-form">
     <InputWithLabel id='search' value={searchTerm} isFocused onInputChange={onSearchInput}>
       <strong>Search:</strong>
     </InputWithLabel>
 
-    <button type='submit' disabled={!searchTerm}>
+    <button type='submit' disabled={!searchTerm} className="button button_large">
       submit
     </button>
   </form>
@@ -105,15 +128,20 @@ const App = () => {
   };
 
   return (
-    <div className="container">
-      <h1 className="headline">My hacker stories</h1>
+    <StyledContainer>
+     {/* <div className="container"> */}
+
+      {/* <h1 className="headline"> */}
+        <StyledHeadlinePrimary></StyledHeadlinePrimary>
+        {/* </h1> */}
 
       <SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} OnSearchSubmit={handleSearchSubmit}/>
 
       <hr/>
       {stories.isError && <p>Something went wrong...</p>}
       { stories.isLoading ? (<p>Loading...</p>) :<List list={stories.data} onRemoveItem={handleRemoveStory}/> }
-    </div>
+     {/* </div> */}
+    </StyledContainer>
   ); 
 };
 
@@ -132,9 +160,9 @@ const InputWithLabel = ({id, value, type="text", onInputChange, isFocused, child
 
   return (
     <>
-      <label htmlFor={id}>{children}</label> &nbsp;
+      <label htmlFor={id} className="label">{children}</label> &nbsp;
       {/* B */}
-      <input ref={inputRef} id={id} type={type} value={value} autoFocus={isFocused} onChange={onInputChange}/>
+      <input ref={inputRef} id={id} type={type} value={value} autoFocus={isFocused} onChange={onInputChange} className="input"/>
     </>
   );
 }
@@ -150,12 +178,12 @@ const Item = ({ item, onRemoveItem }) => {
     onRemoveItem(item);
   }
   return (
-    <div>
-      <span><a href={item.url}>{item.title}</a></span>
-      <span>{item.author}</span>
-      <span>{item.num_comments}</span>
-      <span>{item.points}</span>
-      <span><button type="button" onClick={() => handleRemoveItem(item)}>Dismiss</button></span>
+    <div className="item">
+      <span style={{width: '40%'}}><a href={item.url}>{item.title}</a></span>
+      <span style={{width: '30%'}}>{item.author}</span>
+      <span style={{width: '10%'}}>{item.num_comments}</span>
+      <span style={{width: '10%'}}>{item.points}</span>
+      <span style={{width: '10%'}}><button type="button" onClick={() => handleRemoveItem(item)}>Dismiss</button></span>
     </div>
   )
 }
