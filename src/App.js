@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const SearchForm = ({searchTerm, onSearchInput, OnSearchSubmit }) => (
   <form onSubmit={OnSearchSubmit}>
-    <InputWithLabel id='search' value={searchTerm} isFocused onInputChang={onSearchInput}>
+    <InputWithLabel id='search' value={searchTerm} isFocused onInputChange={onSearchInput}>
       <strong>Search:</strong>
     </InputWithLabel>
 
@@ -52,7 +52,7 @@ const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query='
 
 const App = () => {
 
-  const [searchTerm, setSearchTerm] = useSemiPersistentState('search', 'React');
+  const [searchTerm, setSearchTerm] = useSemiPersistentState('search', '');
   const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`);
   
 
@@ -105,8 +105,8 @@ const App = () => {
   };
 
   return (
-    <div>
-      <h1>My hacker stories</h1>
+    <div className="container">
+      <h1 className="headline">My hacker stories</h1>
 
       <SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} OnSearchSubmit={handleSearchSubmit}/>
 
