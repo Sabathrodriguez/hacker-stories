@@ -9,7 +9,8 @@ const SearchForm = ({searchTerm, onSearchInput, OnSearchSubmit }) => (
       </InputWithLabel>
   
       <button type='submit' disabled={!searchTerm}>
-        <Check height='18px' width='18px' />
+        {/* <Check height='18px' width='18px' /> */}
+        submit
       </button>
     </form>
   );
